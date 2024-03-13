@@ -1,5 +1,6 @@
 const lib = require('../lib');
 const db = require('../db');
+const mail = require('../mail');
 //Group the tests using describe()
 //The number of unit tests you have for a given function should be gte or et the number of execution paths
 describe('absolute', () => {
@@ -85,6 +86,8 @@ describe('registerUser', () => {
 
 describe('applyDiscount', () => {
   it('should apply 10% discount if customer has more than 10 points', () => {
+    //In unit tests you should not talk to external resources otherwise you are doing integration testing
+    //thus we do a fake or mock implementation of external resouce
     db.getCustomerSync = function (customerId) {
       console.log('Fake reading customer...');
       return { id: customerId, points: 20 };
@@ -92,5 +95,19 @@ describe('applyDiscount', () => {
     const order = { customerId: 1, totalPrice: 10 };
     lib.applyDiscount(order);
     expect(order.totalPrice).toBe(9);
+  });
+});
+
+describe('notifyCustomer', () => {
+  it('should send an email to the customer', () => {
+    db.getCustomerSync = function (customerId) {
+      return { email: 'a' };
+    };
+    let mailSent = false;
+    mail.send = function (email, message) {
+      mailSent = true;
+    };
+    lib.notifyCustomer({ customerId: 1 });
+    expect(mailSent).toBe(true);
   });
 });
