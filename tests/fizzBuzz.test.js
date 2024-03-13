@@ -1,7 +1,8 @@
 const lib = require('../fizzBuzz');
 
 describe('fizzbuzz', () => {
-  it('should throw an exception, if input is not an number', () => {
+  it('should throw an exception, if input is NaN', () => {
+    // NaN can have many possiblities
     expect(() => {
       lib.fizzBuzz('a');
     }).toThrow();
